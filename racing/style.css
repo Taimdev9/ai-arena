@@ -1,160 +1,3 @@
-* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
-html, body {
-  background: radial-gradient(circle at 50% 0%, #1a2a4a, #0a0e1a 70%);
-  color: #e6ecff;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-  touch-action: manipulation;
-  overscroll-behavior: none;
-}
-
-.app {
-  max-width: 720px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-header { text-align: center; }
-h1 {
-  font-size: 22px;
-  background: linear-gradient(90deg, #4fc3f7, #b388ff, #ff8a80);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.sub { font-size: 12px; color: #8a9bc7; margin-top: 2px; }
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-.stat {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 6px 2px;
-  text-align: center;
-}
-.stat span {
-  display: block;
-  font-size: 15px;
-  font-weight: 700;
-  color: #4fc3f7;
-}
-.stat small { font-size: 10px; color: #8a9bc7; }
-
-canvas {
-  width: 100%;
-  height: auto;
-  border-radius: 14px;
-  background: #0e1526;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  display: block;
-  touch-action: none;
-}
-
-/* ============ التحكم ============ */
-.controls {
-  direction: ltr;                 /* ← يمنع الانقلاب بسبب RTL */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 4px;
-  margin-top: 4px;
-}
-
-.side {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-/* أزرار التوجيه */
-.circle-btn {
-  width: 84px;
-  height: 84px;
-  font-size: 34px;
-  font-weight: 700;
-  border-radius: 50%;
-  border: 2px solid rgba(79,195,247,0.4);
-  background: rgba(79,195,247,0.15);
-  color: #c6e8ff;
-  cursor: pointer;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.08s, background 0.15s;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-}
-.circle-btn:active,
-.circle-btn.pressed {
-  transform: scale(0.9);
-  background: rgba(79,195,247,0.5);
-  color: #fff;
-}
-
-/* أزرار GO / BRAKE */
-.round-btn {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: none;
-  color: #fff;
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  touch-action: manipulation;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-}
-
-.round-btn.go {
-  background: linear-gradient(135deg, #1f3a2a, #0e2a1a);
-  border: 2px solid #2e7d32;
-  color: #7cffa0;
-}
-.round-btn.go.active {
-  background: linear-gradient(135deg, #00e676, #00c853);
-  border-color: #b9f6ca;
-  color: #003300;
-  box-shadow: 0 0 28px rgba(0,230,118,0.75),
-              0 4px 14px rgba(0,0,0,0.4);
-}
-
-.round-btn.brake {
-  background: linear-gradient(135deg, #ef5350, #b71c1c);
-  border: 2px solid #ff8a80;
-}
-.round-btn.brake.pressed {
-  transform: scale(0.9);
-  box-shadow: 0 0 25px rgba(255,80,80,0.8);
-}
-
-#status {
-  text-align: center;
-  font-size: 13px;
-  color: #8a9bc7;
-  min-height: 20px;
-  padding: 4px;
-}
 /* ============ أوضاع ============ */
 .modes {
   display: grid;
@@ -162,8 +5,8 @@ canvas {
   gap: 8px;
 }
 .mode {
-  padding: 12px 6px;
-  font-size: 14px;
+  padding: 12px 4px;
+  font-size: 13px;
   font-weight: 700;
   border-radius: 12px;
   border: 2px solid rgba(255,255,255,0.12);
@@ -180,25 +23,86 @@ canvas {
   box-shadow: 0 0 18px rgba(79,195,247,0.35);
 }
 
-/* ============ لوحة التدريب ============ */
+.hidden { display: none !important; }
+
+/* لوحة التدريب */
 .train-panel {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   font-size: 13px;
 }
-.train-panel.hidden { display: none; }
-.tp-row {
-  display: flex;
-  justify-content: space-between;
-}
-.tp-row b { color: #4fc3f7; font-weight: 700; }
+.tp-row { display: flex; justify-content: space-between; }
+.tp-row b { color: #4fc3f7; }
 
-/* ============ toggle الحساسات ============ */
+/* سرعة التدريب */
+.speed-panel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.speed-label { color: #8a9bc7; }
+.speed-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #8a9bc7;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.speed-btn.active {
+  background: rgba(79,195,247,0.2);
+  border-color: #4fc3f7;
+  color: #4fc3f7;
+}
+
+/* أزرار كبيرة */
+.row-btns {
+  display: flex;
+  gap: 8px;
+}
+.big-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #29b6f6, #7e57c2);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.big-btn:active { transform: scale(0.97); }
+.small-btn {
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #8a9bc7;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* المخطط */
+#chart {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+/* toggle */
 .toggle {
   display: flex;
   align-items: center;
@@ -207,8 +111,73 @@ canvas {
   font-size: 13px;
   color: #8a9bc7;
   cursor: pointer;
-  user-select: none;
 }
 .toggle input { width: 18px; height: 18px; accent-color: #4fc3f7; }
 
-.controls.hidden { display: none; }
+/* معلومات السباق */
+.race-info {
+  text-align: center;
+  font-size: 14px;
+  color: #4fc3f7;
+  min-height: 20px;
+  padding: 4px;
+}
+
+/* الليدر بورد */
+.leaderboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.lb-section {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px;
+}
+.lb-section h3 {
+  font-size: 13px;
+  color: #8a9bc7;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.lb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+.lb-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+.lb-list li:last-child { border-bottom: none; }
+.lb-list li.empty {
+  color: #5a6a8f;
+  font-style: italic;
+  justify-content: center;
+  padding: 12px 0;
+}
+.lb-list .rank {
+  width: 18px;
+  color: #4fc3f7;
+  font-weight: 700;
+}
+.lb-list .who { flex: 1; color: #c6d3ec; }
+.lb-list .t {
+  color: #4fc3f7;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.lb-list li.ai .who { color: #ff8a80; }
+.lb-list li.ai .t { color: #ff8a80; }
+
+.status {
+  text-align: center;
+  font-size: 12px;
+  color: #8a9bc7;
+  min-height: 18px;
+}
