@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>AI Racing</title>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <div class="app">
   <header>
     <h1>🏎️ AI Racing</h1>
-    <p class="sub">علّم AI يقود لحاله</p>
+    <p class="sub">علّم AI يقود — وتنافسه</p>
   </header>
 
   <div class="stats">
@@ -22,20 +22,41 @@
 
   <canvas id="game" width="700" height="500"></canvas>
 
-  <!-- أوضاع -->
+  <!-- الأوضاع -->
   <div class="modes">
-    <button id="btnManual" class="mode active">🎮 يدوي</button>
-    <button id="btnAI" class="mode">🤖 AI</button>
-    <button id="btnTrain" class="mode">🎓 تدريب</button>
+    <button id="btnManual" class="mode">🎮 يدوي</button>
+    <button id="btnRace" class="mode">⚔️ سباق</button>
+    <button id="btnTrain" class="mode active">🎓 تدريب</button>
   </div>
 
-  <!-- لوحة التدريب -->
-  <div id="trainPanel" class="train-panel hidden">
+  <!-- سباق -->
+  <div id="raceInfo" class="hidden">
+    <p id="raceResult" class="race-info">—</p>
+    <button id="raceStartBtn" class="big-btn">🏁 ابدأ السباق</button>
+  </div>
+
+  <!-- تدريب -->
+  <div id="trainPanel" class="train-panel">
     <div class="tp-row"><span>حلقات:</span><b id="trEpisodes">0</b></div>
     <div class="tp-row"><span>أفضل لفة (خطوات):</span><b id="trBestLap">-</b></div>
     <div class="tp-row"><span>Epsilon:</span><b id="trEpsilon">1.000</b></div>
     <div class="tp-row"><span>آخر مكافأة:</span><b id="trReward">0</b></div>
   </div>
+
+  <div id="speedPanel" class="speed-panel">
+    <span class="speed-label">سرعة التدريب:</span>
+    <button class="speed-btn active" data-speed="1">1x 👀</button>
+    <button class="speed-btn" data-speed="10">10x</button>
+    <button class="speed-btn" data-speed="50">50x ⚡</button>
+  </div>
+
+  <div class="row-btns">
+    <button id="btnTrainToggle" class="big-btn">▶️ ابدأ التدريب</button>
+    <button id="btnResetBrain" class="small-btn">🗑️</button>
+  </div>
+
+  <!-- مخطط التطور -->
+  <canvas id="chart" width="600" height="110"></canvas>
 
   <!-- عرض الحساسات -->
   <label class="toggle">
@@ -44,7 +65,7 @@
   </label>
 
   <!-- تحكم يدوي -->
-  <div id="controls" class="controls">
+  <div id="controls" class="controls hidden">
     <div class="side">
       <button id="btnLeft" class="circle-btn">◀</button>
       <button id="btnRight" class="circle-btn">▶</button>
@@ -55,10 +76,23 @@
     </div>
   </div>
 
-  <p id="status">اضغط GO لتشغيل السيارة</p>
+  <!-- الليدر بورد -->
+  <div class="leaderboard">
+    <div class="lb-section">
+      <h3>🏆 أسرع الأوقات</h3>
+      <ol id="fastestList" class="lb-list"></ol>
+    </div>
+    <div class="lb-section">
+      <h3>📝 آخر السباقات</h3>
+      <ol id="recentList" class="lb-list"></ol>
+    </div>
+  </div>
+
+  <p id="status" class="status">جاري التحميل...</p>
 </div>
-<script src="track.js?v=4"></script>
-<script src="ai.js?v=4"></script>
-<script src="game.js?v=4"></script>
+<script src="track.js?v=5"></script>
+<script src="ai.js?v=5"></script>
+<script src="leaderboard.js?v=5"></script>
+<script src="game.js?v=5"></script>
 </body>
 </html>
