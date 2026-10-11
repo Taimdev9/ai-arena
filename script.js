@@ -34,7 +34,10 @@ let autoTraining = false;
 let stopFlag = false;
 
 // ============ حفظ / تحميل ============
-function save() {
+let lastCloudSave = 0;
+const CLOUD_INTERVAL = 30000;
+
+function saveLocal() {
   const data = {
     Q, totalEpisodes, totalWins, epsilon,
     totalTrainingMs: totalTrainingMs + (trainingStartTime ? Date.now() - trainingStartTime : 0)
@@ -42,18 +45,65 @@ function save() {
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
 }
 
-function load() {
+async function saveCloud() {
+  if (!window.Firebase) return;
+  await window.Firebase.ready;
+  const data = {
+    Q, totalEpisodes, totalWins, epsilon,
+    totalTrainingMs: totalTrainingMs + (trainingStartTime ? Date.now() - trainingStartTime : 0)
+  };
+  const ok = await window.Firebase.save(data);
+  const el = document.getElementById('cloud-status');
+  if (el) el.textContent = ok ? '☁️ محفوظ سحابياً' : '⚠️ فشل الحفظ السحابي';
+}
+
+function save() {
+  saveLocal();
+  if (Date.now() - lastCloudSave > CLOUD_INTERVAL) {
+    lastCloudSave = Date.now();
+    saveCloud();
+  }
+}
+
+async function load() {
+  let localData = null;
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return false;
-    const d = JSON.parse(raw);
-    Q = d.Q || {};
-    totalEpisodes = d.totalEpisodes || 0;
-    totalWins = d.totalWins || 0;
-    epsilon = d.epsilon ?? 1.0;
-    totalTrainingMs = d.totalTrainingMs || 0;
-    return true;
-  } catch(e) { return false; }
+    if (raw) localData = JSON.parse(raw);
+  } catch(e) {}
+
+  let cloudData = null;
+  if (window.Firebase) {
+    const el = document.getElementById('cloud-status');
+    if (el) el.textContent = '⏳ جاري الاتصال...';
+    await window.Firebase.ready;
+    cloudData = await window.Firebase.load();
+  }
+
+  let chosen = null;
+  const localEp = localData?.totalEpisodes || 0;
+  const cloudEp = cloudData?.totalEpisodes || 0;
+  const el = document.getElementById('cloud-status');
+
+  if (cloudData && (!localData || cloudEp > localEp)) {
+    chosen = cloudData;
+    if (el) el.textContent = '☁️ حُمّلت من السحابة';
+  } else if (localData) {
+    chosen = localData;
+    if (el) el.textContent = '💾 حُمّلت محلياً';
+    if (!cloudData || localEp > cloudEp) saveCloud();
+  } else {
+    if (el) el.textContent = '🆕 بداية جديدة';
+  }
+
+  if (!chosen) return false;
+
+  Q = chosen.Q || {};
+  totalEpisodes = chosen.totalEpisodes || 0;
+  totalWins = chosen.totalWins || 0;
+  epsilon = chosen.epsilon ?? 1.0;
+  totalTrainingMs = chosen.totalTrainingMs || 0;
+  return true;
 }
 
 // ============ ذاكرة AI ============
@@ -138,15 +188,21 @@ async function autoTrain() {
     }
 
     if (now - lastSave > 5000) {
-      save();
+      saveLocal();
       lastSave = now;
+    }
+
+    if (now - lastCloudSave > CLOUD_INTERVAL) {
+      lastCloudSave = now;
+      saveCloud();
     }
 
     await sleep(0);
   }
 
   autoTraining = false;
-  save();
+  saveLocal();
+  saveCloud();
   setButtons();
 }
 
@@ -261,7 +317,9 @@ document.getElementById('btnTrain').onclick = () => {
 document.getElementById('btnWatch').onclick = watch;
 document.getElementById('btnStop').onclick = () => {
   stopFlag = true;
-  document.getElementById('status').textContent = '⏸️ وقف التدريب — الذاكرة محفوظة';
+  saveLocal();
+  saveCloud();
+  document.getElementById('status').textContent = '⏸️ وقف التدريب — محفوظ محلياً وسحابياً';
 };
 document.getElementById('btnReset').onclick = () => {
   if (!confirm('متأكد؟ رح تمسح كل ذاكرة AI')) return;
@@ -272,14 +330,16 @@ document.getElementById('btnReset').onclick = () => {
 };
 
 // تحميل
-const loaded = load();
-if (loaded) {
-  document.getElementById('status').textContent =
-    `💾 تحمّلت ذاكرة قديمة — ${totalEpisodes.toLocaleString()} حلقة سابقة`;
-} else {
-  document.getElementById('status').textContent = '🆕 ذاكرة فاضية — ابدأ التدريب';
-}
-updateUI();
-render();
+(async () => {
+  const loaded = await load();
+  if (loaded) {
+    document.getElementById('status').textContent =
+      `💾 تحمّلت ذاكرة — ${totalEpisodes.toLocaleString()} حلقة سابقة`;
+  } else {
+    document.getElementById('status').textContent = '🆕 ذاكرة فاضية — ابدأ التدريب';
+  }
+  updateUI();
+  render();
+})();
 
-window.addEventListener('beforeunload', save);
+window.addEventListener('beforeunload', saveLocal);
