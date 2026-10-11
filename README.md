@@ -5,9 +5,8 @@
 ## 🎮 كيف تلعب
 
 افتح الرابط:
-`https://USERNAME.github.io/lab-bot/`
+`https://Taimdev9.github.io/lab-bot/`
 
-استبدل `USERNAME` باسم حسابك في GitHub.
 
 ## 🧠 كيف يتعلم AI
 
