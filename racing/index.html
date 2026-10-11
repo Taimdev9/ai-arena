@@ -2,29 +2,32 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>AI Racing — قريباً</title>
-<style>
-  body {
-    background: #0a0e1a;
-    color: #e6ecff;
-    font-family: sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    text-align: center;
-  }
-  h1 { font-size: 48px; }
-  p { color: #8a9bc7; }
-  a { color: #4fc3f7; text-decoration: none; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AI Racing — تجربة</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div>
-  <h1>🏎️ AI Racing</h1>
-  <p>قيد الإنشاء — قريباً</p>
-  <a href="../">← رجوع للرئيسية</a>
+<div class="app">
+  <header>
+    <h1>🏎️ AI Racing</h1>
+    <p class="sub">جرّب السيارة يدوياً — بعدها نضيف AI</p>
+  </header>
+  <div class="stats">
+    <div class="stat"><span id="speed">0</span><small>السرعة</small></div>
+    <div class="stat"><span id="lap">0</span><small>اللفات</small></div>
+    <div class="stat"><span id="time">0.0s</span><small>الوقت</small></div>
+    <div class="stat"><span id="offtrack">0%</span><small>خارج المسار</small></div>
+  </div>
+  <canvas id="game" width="700" height="500"></canvas>
+  <div class="controls">
+    <button id="btnLeft">◀</button>
+    <button id="btnGas">▲ غاز</button>
+    <button id="btnBrake">▼ فرملة</button>
+    <button id="btnRight">▶</button>
+  </div>
+  <p id="status">استخدم الأزرار للقيادة</p>
 </div>
+<script src="track.js"></script>
+<script src="game.js"></script>
 </body>
 </html>
