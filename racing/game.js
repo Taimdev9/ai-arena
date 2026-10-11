@@ -14,9 +14,13 @@ const car = {
   offTrack: false,
 };
 
-// ============ حالة الـ Joystick ============
-const joystick = { x: 0, y: 0, active: false };
-const keyboard = { x: 0, y: 0 };
+// ============ المدخلات ============
+const input = {
+  gas: false,      // زر GO (toggle)
+  brake: false,    // زر BRAKE (momentary)
+  left: false,     // سهم يسار
+  right: false,    // سهم يمين
+};
 
 // ============ إحصاءات ============
 let lap = 0;
@@ -29,25 +33,18 @@ let accumulated = 0;
 
 // ============ فيزياء السيارة ============
 function updateCar() {
-  // دمج إدخال الجويستيك + الكيبورد
-  const ix = joystick.active ? joystick.x : keyboard.x;
-  const iy = joystick.active ? joystick.y : keyboard.y;
-
-  // y سالب = للأعلى (غاز) | y موجب = للأسفل (فرملة)
-  const gasInput = Math.max(0, -iy);
-  const brakeInput = Math.max(0, iy);
-  const steer = ix;
-
-  const acc = gasInput - brakeInput;
+  const acc = (input.gas ? 1 : 0) - (input.brake ? 1 : 0);
   car.speed += acc * car.accel;
 
   if (car.speed > car.maxSpeed) car.speed = car.maxSpeed;
   if (car.speed < -car.maxSpeed * 0.5) car.speed = -car.maxSpeed * 0.5;
 
-  car.speed *= car.friction;
+  // لما ما في ضغط على غاز أو فرامل → تباطؤ طبيعي
+  if (!input.gas && !input.brake) car.speed *= car.friction;
   if (Math.abs(car.speed) < 0.01) car.speed = 0;
 
-  // التوجيه (كل ما زاد التحريك، زادت زاوية الدوران)
+  // التوجيه
+  const steer = (input.right ? 1 : 0) - (input.left ? 1 : 0);
   if (Math.abs(car.speed) > 0.1) {
     car.angle += steer * car.turnSpeed * Math.sign(car.speed);
   }
@@ -108,6 +105,7 @@ function drawCar() {
   }
   ctx.fill();
 
+  // مؤشر المقدمة
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#fff';
   ctx.beginPath();
@@ -138,103 +136,67 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// ============ Joystick ============
-const joystickEl = document.getElementById('joystick');
-const knobEl = document.getElementById('joystickKnob');
-
-let joyCenterX = 0, joyCenterY = 0;
-let joyMaxRadius = 42;
-
-function computeJoyCenter() {
-  const rect = joystickEl.getBoundingClientRect();
-  joyCenterX = rect.left + rect.width / 2;
-  joyCenterY = rect.top + rect.height / 2;
-  // نصف قطر منطقة الحركة (ناقص نصف حجم الزر)
-  joyMaxRadius = (rect.width / 2) - 32;
+// ============ ربط الأزرار ============
+// أزرار التوجيه (momentary - تنكبس وتفك)
+function bindMomentary(id, key) {
+  const el = document.getElementById(id);
+  const press = e => {
+    e.preventDefault();
+    input[key] = true;
+    el.classList.add('pressed');
+  };
+  const release = e => {
+    if (e) e.preventDefault();
+    input[key] = false;
+    el.classList.remove('pressed');
+  };
+  el.addEventListener('touchstart', press, { passive: false });
+  el.addEventListener('touchend', release);
+  el.addEventListener('touchcancel', release);
+  el.addEventListener('mousedown', press);
+  el.addEventListener('mouseup', release);
+  el.addEventListener('mouseleave', release);
 }
 
-function setJoystick(clientX, clientY) {
-  let dx = clientX - joyCenterX;
-  let dy = clientY - joyCenterY;
-  const dist = Math.hypot(dx, dy);
+bindMomentary('btnLeft', 'left');
+bindMomentary('btnRight', 'right');
+bindMomentary('btnBrake', 'brake');
 
-  if (dist > joyMaxRadius) {
-    dx = dx / dist * joyMaxRadius;
-    dy = dy / dist * joyMaxRadius;
-  }
+// زر GO (toggle - ضغطة تشغل، ضغطة تطفئ)
+const btnGo = document.getElementById('btnGo');
+const statusEl = document.getElementById('status');
 
-  knobEl.style.transform = `translate(${dx}px, ${dy}px)`;
-
-  // قيم معيارية -1 إلى 1
-  joystick.x = dx / joyMaxRadius;
-  joystick.y = dy / joyMaxRadius;
-
-  // منطقة ميتة صغيرة
-  if (Math.abs(joystick.x) < 0.08) joystick.x = 0;
-  if (Math.abs(joystick.y) < 0.08) joystick.y = 0;
+function toggleGo() {
+  input.gas = !input.gas;
+  btnGo.classList.toggle('active', input.gas);
+  statusEl.textContent = input.gas
+    ? '🟢 السيارة شغالة — استخدم ◀ ▶ للتوجيه'
+    : 'اضغط GO لتشغيل السيارة';
 }
 
-function resetJoystick() {
-  knobEl.style.transform = 'translate(0, 0)';
-  joystick.x = 0;
-  joystick.y = 0;
-  joystick.active = false;
-  joystickEl.classList.remove('active');
-}
-
-function startJoystick(clientX, clientY) {
-  computeJoyCenter();
-  joystick.active = true;
-  joystickEl.classList.add('active');
-  setJoystick(clientX, clientY);
-}
-
-// --- أحداث اللمس ---
-joystickEl.addEventListener('touchstart', e => {
+btnGo.addEventListener('touchstart', e => {
   e.preventDefault();
-  const t = e.touches[0];
-  startJoystick(t.clientX, t.clientY);
+  toggleGo();
 }, { passive: false });
-
-joystickEl.addEventListener('touchmove', e => {
-  e.preventDefault();
-  if (!joystick.active) return;
-  const t = e.touches[0];
-  setJoystick(t.clientX, t.clientY);
-}, { passive: false });
-
-joystickEl.addEventListener('touchend', e => {
-  e.preventDefault();
-  resetJoystick();
-}, { passive: false });
-
-joystickEl.addEventListener('touchcancel', () => resetJoystick());
-
-// --- أحداث الماوس (للابتوب) ---
-joystickEl.addEventListener('mousedown', e => {
-  e.preventDefault();
-  startJoystick(e.clientX, e.clientY);
+btnGo.addEventListener('click', e => {
+  // يمنع الحرق المزدوج على الموبايل
+  if (e.detail === 0) return;
+  toggleGo();
 });
 
-window.addEventListener('mousemove', e => {
-  if (!joystick.active) return;
-  setJoystick(e.clientX, e.clientY);
-});
-
-window.addEventListener('mouseup', () => {
-  if (joystick.active) resetJoystick();
-});
-
-// --- كيبورد (لو فتحت من كمبيوتر) ---
+// ============ كيبورد (للكمبيوتر) ============
 window.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp' || e.key === 'w') keyboard.y = -1;
-  if (e.key === 'ArrowDown' || e.key === 's') keyboard.y = 1;
-  if (e.key === 'ArrowLeft' || e.key === 'a') keyboard.x = -1;
-  if (e.key === 'ArrowRight' || e.key === 'd') keyboard.x = 1;
+  if (e.key === 'ArrowUp' || e.key === 'w') {
+    if (!input.gas) toggleGo();
+  }
+  if (e.key === 'ArrowDown' || e.key === 's') input.brake = true;
+  if (e.key === 'ArrowLeft' || e.key === 'a') input.left = true;
+  if (e.key === 'ArrowRight' || e.key === 'd') input.right = true;
 });
 window.addEventListener('keyup', e => {
-  if (['ArrowUp','w','ArrowDown','s'].includes(e.key)) keyboard.y = 0;
-  if (['ArrowLeft','a','ArrowRight','d'].includes(e.key)) keyboard.x = 0;
+  if (e.key === 'ArrowDown' || e.key === 's') input.brake = false;
+  if (e.key === 'ArrowLeft' || e.key === 'a') input.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd') input.right = false;
 });
 
 // ============ تشغيل ============
