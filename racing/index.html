@@ -19,17 +19,21 @@
     <div class="stat"><span id="offtrack">0%</span><small>خارج المسار</small></div>
   </div>
   <canvas id="game" width="700" height="500"></canvas>
+
   <div class="controls">
-    <div class="side">
-      <button id="btnLeft">◀</button>
-      <button id="btnRight">▶</button>
+    <div class="hint">
+      <div class="hint-row"><span class="arrow">↑</span> غاز</div>
+      <div class="hint-row"><span class="arrow">↓</span> فرملة</div>
+      <div class="hint-row"><span class="arrow">←</span><span class="arrow">→</span> توجيه</div>
     </div>
-    <div class="side">
-      <button id="btnBrake">▼</button>
-      <button id="btnGas">▲</button>
+
+    <div class="joystick" id="joystick">
+      <div class="joystick-ring"></div>
+      <div class="joystick-knob" id="joystickKnob"></div>
     </div>
   </div>
-  <p id="status">استخدم الأزرار للقيادة</p>
+
+  <p id="status">اسحب الـ Joystick للقيادة</p>
 </div>
 <script src="track.js"></script>
 <script src="game.js"></script>
