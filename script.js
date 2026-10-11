@@ -342,4 +342,4 @@ document.getElementById('btnReset').onclick = () => {
   render();
 })();
 
-window.addEventListener('beforeunload', saveLocal);
+window.addEventListener('beforeunload', saveLocal); 
