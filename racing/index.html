@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>AI Racing — تجربة</title>
-<link rel="stylesheet" href="style.css">
+<title>AI Racing</title>
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="app">
   <header>
     <h1>🏎️ AI Racing</h1>
-    <p class="sub">جرّب السيارة يدوياً — بعدها نضيف AI</p>
+    <p class="sub">جرّب السيارة يدوياً</p>
   </header>
   <div class="stats">
     <div class="stat"><span id="speed">0</span><small>السرعة</small></div>
@@ -18,29 +18,23 @@
     <div class="stat"><span id="time">0.0s</span><small>الوقت</small></div>
     <div class="stat"><span id="offtrack">0%</span><small>خارج المسار</small></div>
   </div>
+
   <canvas id="game" width="700" height="500"></canvas>
 
   <div class="controls">
-    <!-- يسار: توجيه -->
-    <div class="side left">
+    <div class="side">
       <button id="btnLeft" class="circle-btn">◀</button>
       <button id="btnRight" class="circle-btn">▶</button>
     </div>
-
-    <!-- يمين: GO + BRAKE -->
-    <div class="side right">
-      <button id="btnGo" class="round-btn go">
-        <span class="label">GO</span>
-      </button>
-      <button id="btnBrake" class="round-btn brake">
-        <span class="label">BRAKE</span>
-      </button>
+    <div class="side">
+      <button id="btnBrake" class="round-btn brake">BRAKE</button>
+      <button id="btnGo" class="round-btn go">GO</button>
     </div>
   </div>
 
   <p id="status">اضغط GO لتشغيل السيارة</p>
 </div>
-<script src="track.js"></script>
-<script src="game.js"></script>
+<script src="track.js?v=3"></script>
+<script src="game.js?v=3"></script>
 </body>
 </html>
