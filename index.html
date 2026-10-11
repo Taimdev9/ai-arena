@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Bot — AI يتعلم لحاله</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🤖 Lab Bot</h1>
+    <p class="sub">AI يتعلم من الصفر — شوفه بنفسك</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span id="episodes">0</span><small>حلقة</small></div>
+    <div class="stat"><span id="wins">0</span><small>فوز</small></div>
+    <div class="stat"><span id="rate">0%</span><small>نسبة النجاح</small></div>
+    <div class="stat"><span id="timer">0s</span><small>وقت التدريب</small></div>
+    <div class="stat"><span id="epsilon">1.00</span><small>الاستكشاف</small></div>
+  </div>
+
+  <canvas id="game" width="420" height="420"></canvas>
+
+  <div class="controls">
+    <button id="btnTrain">🚀 ابدأ التدريب الذاتي</button>
+    <button id="btnWatch">👀 شاهد AI</button>
+    <button id="btnStop" disabled>⏸️ إيقاف</button>
+    <button id="btnReset">🔄 تصفير</button>
+  </div>
+
+  <p id="status">اضغط "ابدأ التدريب الذاتي"</p>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
