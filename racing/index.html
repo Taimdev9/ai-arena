@@ -21,19 +21,24 @@
   <canvas id="game" width="700" height="500"></canvas>
 
   <div class="controls">
-    <div class="hint">
-      <div class="hint-row"><span class="arrow">↑</span> غاز</div>
-      <div class="hint-row"><span class="arrow">↓</span> فرملة</div>
-      <div class="hint-row"><span class="arrow">←</span><span class="arrow">→</span> توجيه</div>
+    <!-- يسار: توجيه -->
+    <div class="side left">
+      <button id="btnLeft" class="circle-btn">◀</button>
+      <button id="btnRight" class="circle-btn">▶</button>
     </div>
 
-    <div class="joystick" id="joystick">
-      <div class="joystick-ring"></div>
-      <div class="joystick-knob" id="joystickKnob"></div>
+    <!-- يمين: GO + BRAKE -->
+    <div class="side right">
+      <button id="btnGo" class="round-btn go">
+        <span class="label">GO</span>
+      </button>
+      <button id="btnBrake" class="round-btn brake">
+        <span class="label">BRAKE</span>
+      </button>
     </div>
   </div>
 
-  <p id="status">اسحب الـ Joystick للقيادة</p>
+  <p id="status">اضغط GO لتشغيل السيارة</p>
 </div>
 <script src="track.js"></script>
 <script src="game.js"></script>
