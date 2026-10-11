@@ -1,11 +1,10 @@
-// تعريف المضمار (حلقة بيضاوية)
+// تعريف المضمار
 const TRACK = {
   cx: 350, cy: 250,
   outer: { a: 320, b: 220 },
   inner: { a: 180, b: 100 },
 };
 
-// هل النقطة داخل المضمار؟
 function isOnTrack(x, y) {
   const dx = x - TRACK.cx;
   const dy = y - TRACK.cy;
@@ -16,16 +15,37 @@ function isOnTrack(x, y) {
   return inOuter && !inInner;
 }
 
-// رسم المضمار
+// حساس: يرمي شعاع وينطق بأول مسافة يلقى فيها حائط (خروج عن المضمار)
+function raycast(x, y, angle, maxDist) {
+  const step = 4;
+  let d = 0;
+  while (d < maxDist) {
+    const px = x + Math.cos(angle) * d;
+    const py = y + Math.sin(angle) * d;
+    if (!isOnTrack(px, py)) return d;
+    d += step;
+  }
+  return maxDist;
+}
+
+// حساب نقطة نهاية الحساس (للرسم)
+function sensorEndPoint(car, angleOffset, maxDist) {
+  const a = car.angle + angleOffset;
+  const d = raycast(car.x, car.y, a, maxDist);
+  return {
+    x: car.x + Math.cos(a) * d,
+    y: car.y + Math.sin(a) * d,
+    dist: d,
+  };
+}
+
 function drawTrack(ctx) {
   const W = ctx.canvas.width;
   const H = ctx.canvas.height;
 
-  // الخلفية (عشب)
   ctx.fillStyle = '#16281a';
   ctx.fillRect(0, 0, W, H);
 
-  // المسار (الإهليلج الخارجي)
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(TRACK.cx, TRACK.cy, TRACK.outer.a, TRACK.outer.b, 0, 0, Math.PI*2);
@@ -33,7 +53,6 @@ function drawTrack(ctx) {
   ctx.fill();
   ctx.restore();
 
-  // الداخل (عشب)
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(TRACK.cx, TRACK.cy, TRACK.inner.a, TRACK.inner.b, 0, 0, Math.PI*2);
@@ -41,7 +60,6 @@ function drawTrack(ctx) {
   ctx.fill();
   ctx.restore();
 
-  // الخط المتقطع في منتصف المسار
   ctx.save();
   ctx.strokeStyle = 'rgba(255,255,255,0.2)';
   ctx.lineWidth = 2;
@@ -53,7 +71,6 @@ function drawTrack(ctx) {
   ctx.stroke();
   ctx.restore();
 
-  // خط البداية (خط أبيض على اليمين)
   ctx.save();
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 3;
